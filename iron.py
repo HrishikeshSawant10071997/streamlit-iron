@@ -55,7 +55,7 @@ if menu == "Home":
                 "Total_Clothes": total_clothes,
                 "Payment_Status": "Pending"
             }
-            data = data.append(new_entry, ignore_index=True)
+            data = pd.concat([data, pd.DataFrame([new_entry])], ignore_index=True)  # Fixed line
             save_data(data)
             st.success("Entry added successfully!")
 
