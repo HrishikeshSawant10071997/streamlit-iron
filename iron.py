@@ -55,12 +55,23 @@ if menu == "Home":
                 "Total_Clothes": total_clothes,
                 "Payment_Status": "Pending"
             }
-            data = pd.concat([data, pd.DataFrame([new_entry])], ignore_index=True)  # Fixed line
+            data = pd.concat([data, pd.DataFrame([new_entry])], ignore_index=True)
             save_data(data)
             st.success("Entry added successfully!")
 
-    st.header("Download Data")
+    st.header("Manage Data")
     st.dataframe(data)
+
+    # Delete existing data
+    delete_index = st.multiselect("Select rows to delete:", data.index)
+    if st.button("Delete Selected Rows"):
+        if delete_index:
+            data = data.drop(delete_index).reset_index(drop=True)
+            save_data(data)
+            st.success("Selected rows deleted successfully!")
+        else:
+            st.warning("No rows selected for deletion.")
+
     st.download_button("Download Data as Excel", data.to_csv(index=False), "clothes_data.csv", "text/csv")
 
 elif menu == "Update Data":
