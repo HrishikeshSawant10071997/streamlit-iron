@@ -13,7 +13,7 @@ def load_data():
     else:
         return pd.DataFrame(columns=[
             "Name", "Date", "Time", "Shirts", "Pants", "T-shirts", 
-            "Sarees", "Dresses", "Dry_clean_shirts", "Total_Clothes", "Payment_Status"
+            "Sarees", "Dresses", "Dry_clean_shirts", "Others", "Total_Clothes", "Payment_Status"
         ])
 
 # Save data
@@ -41,7 +41,8 @@ if menu == "Home":
         sarees = st.number_input("Number of sarees given", min_value=0, value=0, step=1)
         dresses = st.number_input("Number of dresses given", min_value=0, value=0, step=1)
         dry_clean_shirts = st.number_input("Number of shirts/blazers given for dry cleaning", min_value=0, value=0, step=1)
-        total_clothes = shirts + pants + tshirts + sarees + dresses + dry_clean_shirts
+        others = st.number_input("Number of other items given", min_value=0, value=0, step=1)
+        total_clothes = shirts + pants + tshirts + sarees + dresses + dry_clean_shirts + others
         
         submitted = st.form_submit_button("Submit")
         if submitted:
@@ -55,6 +56,7 @@ if menu == "Home":
                 "Sarees": sarees,
                 "Dresses": dresses,
                 "Dry_clean_shirts": dry_clean_shirts,
+                "Others": others,
                 "Total_Clothes": total_clothes,
                 "Payment_Status": "Pending"
             }
