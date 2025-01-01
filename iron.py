@@ -86,23 +86,28 @@ elif menu == "Update Data":
     if data.empty:
         st.info("No data available to update.")
     else:
-        # Add a form for selecting date to retrieve data
+        # Form for selecting the date to retrieve data
         with st.form("update_date_form"):
             selected_date = st.date_input("Select Date to Update", datetime.now())
             retrieve_data = st.form_submit_button("Retrieve Data")
         
         if retrieve_data:
-            filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")]
+            filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")].reset_index()
             if not filtered_data.empty:
                 st.write("Records for the selected date:")
                 st.dataframe(filtered_data)
 
-                # Add another form to update payment status
-                with st.form("update_payment_form"):
-                    updated_status = st.text_input("Update Payment Status (e.g., Paid/Not Paid):")
-                    update_submit = st.form_submit_button("Update")
+                # Form to edit and update data row-wise
+                with st.form("edit_data_form"):
+                    row_to_update = st.selectbox("Select Row to Update", filtered_data.index)
+                    updated_name = st.text_input("Name", filtered_data.at[row_to_update, "Name"])
+                    updated_payment_status = st.text_input("Payment Status", filtered_data.at[row_to_update, "Payment_Status"])
+                    update_submit = st.form_submit_button("Update Selected Row")
+                    
                     if update_submit:
-                        data.loc[data["Date"] == selected_date.strftime("%Y-%m-%d"), "Payment_Status"] = updated_status
+                        row_index = filtered_data.at[row_to_update, "index"]  # Map back to original index
+                        data.at[row_index, "Name"] = updated_name
+                        data.at[row_index, "Payment_Status"] = updated_payment_status
                         save_data(data)
                         st.success("Data updated successfully!")
                         st.experimental_rerun()  # Refresh the app to show updated data
