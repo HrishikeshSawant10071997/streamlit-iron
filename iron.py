@@ -34,7 +34,7 @@ if menu == "Home":
     with st.form("new_entry"):
         name = st.text_input("Cloths given by:")
         date = st.date_input("Date", datetime.now())
-        time = st.time_input("Time", datetime.now().time())
+        time = st.time_input("Time", datetime.now().time())  # Manual time input widget
         shirts = st.number_input("Number of shirts given", min_value=0, value=0, step=1)
         pants = st.number_input("Number of pants given", min_value=0, value=0, step=1)
         tshirts = st.number_input("Number of t-shirts given", min_value=0, value=0, step=1)
