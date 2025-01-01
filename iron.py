@@ -86,20 +86,25 @@ elif menu == "Update Data":
     if data.empty:
         st.info("No data available to update.")
     else:
-        with st.form("update_form"):
+        # Add a form for selecting date to retrieve data
+        with st.form("update_date_form"):
             selected_date = st.date_input("Select Date to Update", datetime.now())
+            retrieve_data = st.form_submit_button("Retrieve Data")
+        
+        if retrieve_data:
             filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")]
-            
             if not filtered_data.empty:
                 st.write("Records for the selected date:")
                 st.dataframe(filtered_data)
-                
-                updated_status = st.text_input("Update Payment Status (e.g., Paid/Not Paid):")
-                submitted = st.form_submit_button("Update")
-                if submitted:
-                    data.loc[data["Date"] == selected_date.strftime("%Y-%m-%d"), "Payment_Status"] = updated_status
-                    save_data(data)
-                    st.success("Data updated successfully!")
-                    st.experimental_rerun()  # Refresh the app to show updated data
+
+                # Add another form to update payment status
+                with st.form("update_payment_form"):
+                    updated_status = st.text_input("Update Payment Status (e.g., Paid/Not Paid):")
+                    update_submit = st.form_submit_button("Update")
+                    if update_submit:
+                        data.loc[data["Date"] == selected_date.strftime("%Y-%m-%d"), "Payment_Status"] = updated_status
+                        save_data(data)
+                        st.success("Data updated successfully!")
+                        st.experimental_rerun()  # Refresh the app to show updated data
             else:
                 st.warning("No records found for the selected date.")
