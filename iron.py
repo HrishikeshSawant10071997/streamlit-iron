@@ -12,8 +12,12 @@ def load_data():
         return pd.read_csv(FILE_PATH)
     else:
         return pd.DataFrame(columns=[
-            "Name", "Date", "Time", "Shirts", "Pants", "T-shirts", 
-            "Sarees", "Dresses", "Dry_clean_shirts", "Others", "Total_Clothes", "Payment_Status"
+            "Name", "Date", "Time", "Shirts", "Pants", "T-shirts",
+            "Sarees", "Dresses", "Dry_clean_shirts", "Others", "Total_Clothes", 
+            "Payment_Status", "Received_By", "Received_Date", 
+            "Shirts_Received", "Pants_Received", "T-shirts_Received", 
+            "Sarees_Received", "Dresses_Received", "Dry_clean_shirts_Received", 
+            "Total_Clothes_Received"
         ])
 
 # Save data
@@ -43,7 +47,7 @@ if menu == "Home":
         dry_clean_shirts = st.number_input("Number of shirts/blazers given for dry cleaning", min_value=0, value=0, step=1)
         others = st.number_input("Number of other items given", min_value=0, value=0, step=1)
         total_clothes = shirts + pants + tshirts + sarees + dresses + dry_clean_shirts + others
-        
+
         submitted = st.form_submit_button("Submit")
         if submitted:
             new_entry = {
@@ -58,7 +62,16 @@ if menu == "Home":
                 "Dry_clean_shirts": dry_clean_shirts,
                 "Others": others,
                 "Total_Clothes": total_clothes,
-                "Payment_Status": "Pending"
+                "Payment_Status": "Pending",
+                "Received_By": "",
+                "Received_Date": "",
+                "Shirts_Received": 0,
+                "Pants_Received": 0,
+                "T-shirts_Received": 0,
+                "Sarees_Received": 0,
+                "Dresses_Received": 0,
+                "Dry_clean_shirts_Received": 0,
+                "Total_Clothes_Received": 0
             }
             data = pd.concat([data, pd.DataFrame([new_entry])], ignore_index=True)
             save_data(data)
@@ -90,7 +103,7 @@ elif menu == "Update Data":
         with st.form("update_date_form"):
             selected_date = st.date_input("Select Date to Update", datetime.now())
             retrieve_data = st.form_submit_button("Retrieve Data")
-        
+
         if retrieve_data:
             filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")].reset_index()
             if not filtered_data.empty:
@@ -102,12 +115,40 @@ elif menu == "Update Data":
                     row_to_update = st.selectbox("Select Row to Update", filtered_data.index)
                     updated_name = st.text_input("Name", filtered_data.at[row_to_update, "Name"])
                     updated_payment_status = st.text_input("Payment Status", filtered_data.at[row_to_update, "Payment_Status"])
+                    received_by = st.text_input("Name of the person who received the clothes", 
+                                                filtered_data.at[row_to_update, "Received_By"])
+                    received_date = st.date_input("Date when clothes were received", datetime.now())
+                    shirts_received = st.number_input("Number of shirts received", 
+                                                       value=filtered_data.at[row_to_update, "Shirts_Received"], step=1)
+                    pants_received = st.number_input("Number of pants received", 
+                                                      value=filtered_data.at[row_to_update, "Pants_Received"], step=1)
+                    tshirts_received = st.number_input("Number of T-shirts received", 
+                                                        value=filtered_data.at[row_to_update, "T-shirts_Received"], step=1)
+                    sarees_received = st.number_input("Number of sarees received", 
+                                                      value=filtered_data.at[row_to_update, "Sarees_Received"], step=1)
+                    dresses_received = st.number_input("Number of dresses received", 
+                                                       value=filtered_data.at[row_to_update, "Dresses_Received"], step=1)
+                    dry_clean_shirts_received = st.number_input("Number of dry-clean shirts received", 
+                                                                 value=filtered_data.at[row_to_update, "Dry_clean_shirts_Received"], step=1)
+
+                    total_clothes_received = (shirts_received + pants_received + tshirts_received + sarees_received + 
+                                               dresses_received + dry_clean_shirts_received)
+
                     update_submit = st.form_submit_button("Update Selected Row")
-                    
+
                     if update_submit:
                         row_index = filtered_data.at[row_to_update, "index"]  # Map back to original index
                         data.at[row_index, "Name"] = updated_name
                         data.at[row_index, "Payment_Status"] = updated_payment_status
+                        data.at[row_index, "Received_By"] = received_by
+                        data.at[row_index, "Received_Date"] = received_date.strftime("%Y-%m-%d")
+                        data.at[row_index, "Shirts_Received"] = shirts_received
+                        data.at[row_index, "Pants_Received"] = pants_received
+                        data.at[row_index, "T-shirts_Received"] = tshirts_received
+                        data.at[row_index, "Sarees_Received"] = sarees_received
+                        data.at[row_index, "Dresses_Received"] = dresses_received
+                        data.at[row_index, "Dry_clean_shirts_Received"] = dry_clean_shirts_received
+                        data.at[row_index, "Total_Clothes_Received"] = total_clothes_received
                         save_data(data)
                         st.success("Data updated successfully!")
                         st.experimental_rerun()  # Refresh the app to show updated data
