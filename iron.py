@@ -1,13 +1,16 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import os
+
+# Define the file path
+FILE_PATH = "clothes_data.csv"
 
 # Load data
-@st.cache_data
 def load_data():
-    try:
-        return pd.read_csv("clothes_data.csv")
-    except FileNotFoundError:
+    if os.path.exists(FILE_PATH):
+        return pd.read_csv(FILE_PATH)
+    else:
         return pd.DataFrame(columns=[
             "Name", "Date", "Time", "Shirts", "Pants", "T-shirts", 
             "Sarees", "Dresses", "Dry_clean_shirts", "Total_Clothes", "Payment_Status"
@@ -15,7 +18,7 @@ def load_data():
 
 # Save data
 def save_data(data):
-    data.to_csv("clothes_data.csv", index=False)
+    data.to_csv(FILE_PATH, index=False)
 
 # Main application
 st.title("Clothes Ironing Tracker")
@@ -58,6 +61,7 @@ if menu == "Home":
             data = pd.concat([data, pd.DataFrame([new_entry])], ignore_index=True)
             save_data(data)
             st.success("Entry added successfully!")
+            st.experimental_rerun()  # Refresh the app to show updated data
 
     st.header("Manage Data")
     st.dataframe(data)
@@ -69,6 +73,7 @@ if menu == "Home":
             data = data.drop(delete_index).reset_index(drop=True)
             save_data(data)
             st.success("Selected rows deleted successfully!")
+            st.experimental_rerun()  # Refresh the app to show updated data
         else:
             st.warning("No rows selected for deletion.")
 
@@ -93,5 +98,6 @@ elif menu == "Update Data":
                     data.loc[data["Date"] == selected_date.strftime("%Y-%m-%d"), "Payment_Status"] = updated_status
                     save_data(data)
                     st.success("Data updated successfully!")
+                    st.experimental_rerun()  # Refresh the app to show updated data
             else:
                 st.warning("No records found for the selected date.")
