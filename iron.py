@@ -105,7 +105,7 @@ elif menu == "Update Data":
             retrieve_data = st.form_submit_button("Retrieve Data")
 
         if retrieve_data:
-            filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")].reset_index()
+            filtered_data = data[data["Date"] == selected_date.strftime("%Y-%m-%d")].reset_index(drop=True)
             if not filtered_data.empty:
                 st.write("Records for the selected date:")
                 st.dataframe(filtered_data)
@@ -113,23 +113,23 @@ elif menu == "Update Data":
                 # Form to edit and update data row-wise
                 with st.form("edit_data_form"):
                     row_to_update = st.selectbox("Select Row to Update", filtered_data.index)
-                    updated_name = st.text_input("Name", filtered_data.at[row_to_update, "Name"])
-                    updated_payment_status = st.text_input("Payment Status", filtered_data.at[row_to_update, "Payment_Status"])
+                    updated_name = st.text_input("Name", filtered_data.loc[row_to_update, "Name"])
+                    updated_payment_status = st.text_input("Payment Status", filtered_data.loc[row_to_update, "Payment_Status"])
                     received_by = st.text_input("Name of the person who received the clothes", 
-                                                filtered_data.at[row_to_update, "Received_By"])
+                                                filtered_data.loc[row_to_update, "Received_By"])
                     received_date = st.date_input("Date when clothes were received", datetime.now())
                     shirts_received = st.number_input("Number of shirts received", 
-                                                       value=filtered_data.at[row_to_update, "Shirts_Received"], step=1)
+                                                       value=filtered_data.loc[row_to_update, "Shirts_Received"], step=1)
                     pants_received = st.number_input("Number of pants received", 
-                                                      value=filtered_data.at[row_to_update, "Pants_Received"], step=1)
+                                                      value=filtered_data.loc[row_to_update, "Pants_Received"], step=1)
                     tshirts_received = st.number_input("Number of T-shirts received", 
-                                                        value=filtered_data.at[row_to_update, "T-shirts_Received"], step=1)
+                                                        value=filtered_data.loc[row_to_update, "T-shirts_Received"], step=1)
                     sarees_received = st.number_input("Number of sarees received", 
-                                                      value=filtered_data.at[row_to_update, "Sarees_Received"], step=1)
+                                                      value=filtered_data.loc[row_to_update, "Sarees_Received"], step=1)
                     dresses_received = st.number_input("Number of dresses received", 
-                                                       value=filtered_data.at[row_to_update, "Dresses_Received"], step=1)
+                                                       value=filtered_data.loc[row_to_update, "Dresses_Received"], step=1)
                     dry_clean_shirts_received = st.number_input("Number of dry-clean shirts received", 
-                                                                 value=filtered_data.at[row_to_update, "Dry_clean_shirts_Received"], step=1)
+                                                                 value=filtered_data.loc[row_to_update, "Dry_clean_shirts_Received"], step=1)
 
                     total_clothes_received = (shirts_received + pants_received + tshirts_received + sarees_received + 
                                                dresses_received + dry_clean_shirts_received)
@@ -137,18 +137,18 @@ elif menu == "Update Data":
                     update_submit = st.form_submit_button("Update Selected Row")
 
                     if update_submit:
-                        row_index = filtered_data.at[row_to_update, "index"]  # Map back to original index
-                        data.at[row_index, "Name"] = updated_name
-                        data.at[row_index, "Payment_Status"] = updated_payment_status
-                        data.at[row_index, "Received_By"] = received_by
-                        data.at[row_index, "Received_Date"] = received_date.strftime("%Y-%m-%d")
-                        data.at[row_index, "Shirts_Received"] = shirts_received
-                        data.at[row_index, "Pants_Received"] = pants_received
-                        data.at[row_index, "T-shirts_Received"] = tshirts_received
-                        data.at[row_index, "Sarees_Received"] = sarees_received
-                        data.at[row_index, "Dresses_Received"] = dresses_received
-                        data.at[row_index, "Dry_clean_shirts_Received"] = dry_clean_shirts_received
-                        data.at[row_index, "Total_Clothes_Received"] = total_clothes_received
+                        row_index = filtered_data.index[row_to_update]  # Map back to original index
+                        data.loc[row_index, "Name"] = updated_name
+                        data.loc[row_index, "Payment_Status"] = updated_payment_status
+                        data.loc[row_index, "Received_By"] = received_by
+                        data.loc[row_index, "Received_Date"] = received_date.strftime("%Y-%m-%d")
+                        data.loc[row_index, "Shirts_Received"] = shirts_received
+                        data.loc[row_index, "Pants_Received"] = pants_received
+                        data.loc[row_index, "T-shirts_Received"] = tshirts_received
+                        data.loc[row_index, "Sarees_Received"] = sarees_received
+                        data.loc[row_index, "Dresses_Received"] = dresses_received
+                        data.loc[row_index, "Dry_clean_shirts_Received"] = dry_clean_shirts_received
+                        data.loc[row_index, "Total_Clothes_Received"] = total_clothes_received
                         save_data(data)
                         st.success("Data updated successfully!")
                         st.experimental_rerun()  # Refresh the app to show updated data
